@@ -60,7 +60,7 @@ function findPath(table, target_id) {
   return path.reverse();
 }
 
-export function Dijkstra(nodes, edges, start_id, end_id) {
+export function Dijkstra(nodes, edges, start_id, end_id, onNext) {
   let visited = [];
   let unVisited = [...nodes];
   let table = nodes.map((node) => {
@@ -87,6 +87,9 @@ export function Dijkstra(nodes, edges, start_id, end_id) {
       }
       console.log(nextNode);
     });
+    if (onNext) {
+      onNext(nextNode);
+    }
     nextNode = findNextNode(table, unVisited);
   }
   console.log(table);

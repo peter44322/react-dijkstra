@@ -27,7 +27,9 @@ function App() {
       { from: "E", to: "C", label: "5" },
     ],
   };
-
+  function sleep(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
   const ref = useRef();
 
   const options = {
@@ -47,7 +49,6 @@ function App() {
         onAdd={(node) => {
           try {
             ref.current.nodes.add(node);
-            graph.nodes.push(node);
           } catch (e) {
             alert(e.message);
           }
@@ -78,22 +79,44 @@ function App() {
             console.log(ref.current.edges.add(edge));
           } else {
             ref.current.edges.remove(old);
-            console.log(ref.current.edges.add(edge));
+            console.log(ref.current.edges.add({ ...edge, color: "#7d5ab5" }));
           }
-          graph.edges.push(edge);
         }}
       ></EdgeControl>
       <SolveControl
-        onSolve={(s, e) =>
-          alert(
-            Dijkstra(
-              ref.current.nodes.get(),
-              ref.current.edges.get(),
-              s,
-              e
-            ).join(">")
-          )
-        }
+        onSolve={(s, e) => {
+          const path = Dijkstra(
+            ref.current.nodes.get(),
+            ref.current.edges.get(),
+            s,
+            e
+          );
+          const strPath = path.join(">");
+
+          ref.current.nodes.forEach((node) => {
+            ref.current.nodes.update({
+              id: node.id,
+              label: node.id,
+              color: null,
+            });
+          });
+
+          path.forEach((nodeId) => {
+            ref.current.nodes.update({
+              id: nodeId,
+              label: nodeId,
+              color: "#5ab55e",
+            });
+          });
+
+          ref.current.edges.forEach((edge) => {
+            ref.current.edges.update({ ...edge, color: null, width: 1 });
+          });
+          ref.current.edges.forEach((edge) => {
+            if (strPath.includes(edge.from + ">" + edge.to))
+              ref.current.edges.update({ ...edge, color: "#5ab55e", width: 3 });
+          });
+        }}
       ></SolveControl>
       <Graph
         graph={graph}
