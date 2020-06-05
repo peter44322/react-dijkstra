@@ -123,7 +123,7 @@ function App() {
                     ref.current.edges.update({
                       ...edge,
                       color: null,
-                      width: 1,
+                      width: null,
                     });
                   });
                   ref.current.edges.forEach((edge) => {
