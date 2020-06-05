@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Segment, Input, Button, Container } from "semantic-ui-react";
 
 const NodeControl = (props) => {
-  const [label, setLabel] = useState("F");
+  const [label, setLabel] = useState();
   return (
     <Container>
       <Input
@@ -11,6 +11,7 @@ const NodeControl = (props) => {
         placeholder="label"
       ></Input>
       <Button
+        disabled={!label}
         onClick={() => {
           const node = {
             id: label,

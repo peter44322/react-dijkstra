@@ -11,7 +11,7 @@ const DeleteControl = (props) => {
         placeholder="label"
         onChange={(e) => setId(e.target.value)}
       ></Input>
-      <Button color="red" onClick={() => props.onDelete(id)}>
+      <Button disabled={!id} color="red" onClick={() => props.onDelete(id)}>
         Delete
       </Button>
     </Container>

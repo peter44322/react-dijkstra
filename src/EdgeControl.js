@@ -24,12 +24,14 @@ const EdgeControl = (props) => {
         type="number"
       ></Input>
       <Button
+        disabled={!from || !to | !w}
         onClick={() => {
           const edge = {
             from: from,
             to: to,
             label: w,
           };
+
           props.onAdd(edge);
         }}
       >

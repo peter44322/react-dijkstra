@@ -16,7 +16,11 @@ const SolveControl = (props) => {
         placeholder="End"
         onChange={(e) => setEnd(e.target.value)}
       ></Input>
-      <Button color="green" onClick={(e) => props.onSolve(start, end)}>
+      <Button
+        disabled={!start || !end}
+        color="green"
+        onClick={(e) => props.onSolve(start, end)}
+      >
         solve
       </Button>
     </Container>
