@@ -1,17 +1,20 @@
 import React from "react";
 import { useState } from "react";
+import { Container, Input, Button } from "semantic-ui-react";
 
 const DeleteControl = (props) => {
   const [id, setId] = useState("");
   return (
-    <div>
-      <input
+    <Container>
+      <Input
         value={id}
         placeholder="label"
         onChange={(e) => setId(e.target.value)}
-      ></input>
-      <button onClick={() => props.onDelete(id)}>Delete</button>
-    </div>
+      ></Input>
+      <Button color="red" onClick={() => props.onDelete(id)}>
+        Delete
+      </Button>
+    </Container>
   );
 };
 

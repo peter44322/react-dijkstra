@@ -1,27 +1,29 @@
 import React, { useState } from "react";
+import { Input, Button, Segment, Container } from "semantic-ui-react";
 
 const EdgeControl = (props) => {
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [w, setW] = useState("");
   return (
-    <div style={{ display: "flex", margin: "30px" }}>
-      <input
+    <Container>
+      <Input
         value={from}
         onChange={(e) => setFrom(e.target.value)}
         placeholder="From"
-      ></input>
-      <input
+      ></Input>
+      <Input
         value={to}
         onChange={(e) => setTo(e.target.value)}
         placeholder="To"
-      ></input>
-      <input
+      ></Input>
+      <Input
         value={w}
         onChange={(e) => setW(e.target.value)}
         placeholder="Wight"
-      ></input>
-      <button
+        type="number"
+      ></Input>
+      <Button
         onClick={() => {
           const edge = {
             from: from,
@@ -32,8 +34,8 @@ const EdgeControl = (props) => {
         }}
       >
         Add Edge
-      </button>
-    </div>
+      </Button>
+    </Container>
   );
 };
 

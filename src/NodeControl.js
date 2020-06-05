@@ -1,15 +1,16 @@
 import React, { useState } from "react";
+import { Segment, Input, Button, Container } from "semantic-ui-react";
 
 const NodeControl = (props) => {
   const [label, setLabel] = useState("F");
   return (
-    <div style={{ display: "flex", margin: "30px" }}>
-      <input
+    <Container>
+      <Input
         value={label}
         onChange={(e) => setLabel(e.target.value)}
         placeholder="label"
-      ></input>
-      <button
+      ></Input>
+      <Button
         onClick={() => {
           const node = {
             id: label,
@@ -20,8 +21,8 @@ const NodeControl = (props) => {
         }}
       >
         Add Node
-      </button>
-    </div>
+      </Button>
+    </Container>
   );
 };
 
