@@ -15,6 +15,9 @@ function findNextNode(table, unVisited) {
     if (current.distance === null) {
       return carry;
     }
+    if (carry.distance === null) {
+      return current;
+    }
     return current.distance < carry.distance ? current : carry;
   });
 }
@@ -27,11 +30,11 @@ function getConnectedNodes(node_id, edges) {
         id: edge.to,
         distance: parseInt(edge.label),
       });
-    } else if (edge.to === node_id) {
-      connected.push({
-        id: edge.from,
-        distance: parseInt(edge.label),
-      });
+      // } else if (edge.to === node_id) {
+      //   connected.push({
+      //     id: edge.from,
+      //     distance: parseInt(edge.label),
+      //   });
     }
   });
   return connected;
@@ -48,6 +51,8 @@ function findIndexInTable(id, table) {
 function findPath(table, target_id) {
   let path = [];
   let prev = table[findIndexInTable(target_id, table)].previous;
+  // console.log(table);
+  // return [];
   while (prev != null) {
     path.push(prev);
     prev = table[findIndexInTable(prev, table)].previous;
@@ -80,9 +85,10 @@ export function Dijkstra(nodes, edges, start_id, end_id) {
         table[tableIndex].distance = nextNode.distance + node.distance;
         table[tableIndex].previous = nextNode.id;
       }
+      console.log(nextNode);
     });
     nextNode = findNextNode(table, unVisited);
   }
-  //   console.log(findPath(table, end_id));
+  console.log(table);
   return [...findPath(table, end_id), end_id];
 }

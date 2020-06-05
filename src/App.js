@@ -6,15 +6,16 @@ import { Dijkstra } from "./Dijkstra";
 import NodeControl from "./NodeControl";
 import EdgeControl from "./EdgeControl";
 import SolveControl from "./SolveControl";
+import DeleteControl from "./DeleteControl";
 
 function App() {
   let graph = {
     nodes: [
-      { id: "A", label: "A", title: "node 1 tootip text" },
-      { id: "B", label: "B", title: "node 2 tootip text" },
-      { id: "C", label: "C", title: "node 3 tootip text" },
-      { id: "D", label: "D", title: "node 4 tootip text" },
-      { id: "E", label: "E", title: "node 5 tootip text" },
+      { id: "A", label: "A" },
+      { id: "B", label: "B" },
+      { id: "C", label: "C" },
+      { id: "D", label: "D" },
+      { id: "E", label: "E" },
     ],
     edges: [
       { from: "A", to: "B", label: "6" },
@@ -23,13 +24,11 @@ function App() {
       { from: "D", to: "E", label: "1" },
       { from: "E", to: "B", label: "2" },
       { from: "C", to: "B", label: "5" },
-      { from: "C", to: "E", label: "5" },
+      { from: "E", to: "C", label: "5" },
     ],
   };
 
   const ref = useRef();
-
-  Dijkstra(graph.nodes, graph.edges, "A", "C");
 
   const options = {
     layout: {
@@ -37,6 +36,7 @@ function App() {
     },
     edges: {
       color: "#000000",
+      smooth: true,
     },
     height: "100%",
   };
@@ -55,15 +55,44 @@ function App() {
       >
         Add Node
       </NodeControl>
+      <DeleteControl
+        onDelete={(id) => {
+          try {
+            ref.current.nodes.remove({ id: id });
+            console.log(ref.current.edges.getDataSet());
+          } catch (e) {
+            alert(e.message);
+          }
+        }}
+      ></DeleteControl>
       <EdgeControl
         onAdd={(edge) => {
-          console.log(ref.current.edges.add(edge));
+          let old = null;
+          // ref.current.edges.foreach()
+          ref.current.edges.forEach((ed) => {
+            if (ed.from === edge.from && ed.to === edge.to) {
+              old = ed;
+            }
+          });
+          if (!old) {
+            console.log(ref.current.edges.add(edge));
+          } else {
+            ref.current.edges.remove(old);
+            console.log(ref.current.edges.add(edge));
+          }
           graph.edges.push(edge);
         }}
       ></EdgeControl>
       <SolveControl
         onSolve={(s, e) =>
-          alert(Dijkstra(graph.nodes, graph.edges, s, e).join(">"))
+          alert(
+            Dijkstra(
+              ref.current.nodes.get(),
+              ref.current.edges.get(),
+              s,
+              e
+            ).join(">")
+          )
         }
       ></SolveControl>
       <Graph
