@@ -1,4 +1,3 @@
-/* eslint-disable no-loop-func */
 import {
   findNextNodeForMaxFlow,
   findIndexInTable,
