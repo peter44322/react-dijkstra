@@ -20,7 +20,7 @@ const EdgeControl = (props) => {
       <Input
         value={w}
         onChange={(e) => setW(e.target.value)}
-        placeholder="Wight"
+        placeholder="Capacity"
         type="number"
       ></Input>
       <Button

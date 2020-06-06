@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Segment, Input, Button, Container } from "semantic-ui-react";
+import { Input, Button, Container } from "semantic-ui-react";
 
 const NodeControl = (props) => {
   const [label, setLabel] = useState();

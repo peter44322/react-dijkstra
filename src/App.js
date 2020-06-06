@@ -95,7 +95,7 @@ function App() {
               <Divider></Divider>
               <SolveControl
                 onSolve={(s, e) => {
-                  const path = Dijkstra(
+                  const [path, maxCap] = Dijkstra(
                     ref.current.nodes.get(),
                     ref.current.edges.get(),
                     s,
@@ -131,9 +131,11 @@ function App() {
                       ref.current.edges.update({
                         ...edge,
                         color: "#5ab55e",
-                        width: 3,
+                        width: 4,
+                        title: "sss",
                       });
                   });
+                  alert("Max Capacity : " + maxCap);
                 }}
               ></SolveControl>
             </Segment>

@@ -12,13 +12,7 @@ function findNextNode(table, unVisited) {
   return unVisited.reduce((accum, curr) => {
     const current = table[findIndexInTable(curr.id, table)];
     const carry = table[findIndexInTable(accum.id, table)];
-    if (current.distance === null) {
-      return carry;
-    }
-    if (carry.distance === null) {
-      return current;
-    }
-    return current.distance < carry.distance ? current : carry;
+    return current.distance > carry.distance ? current : carry;
   });
 }
 
@@ -50,26 +44,36 @@ function findIndexInTable(id, table) {
 
 function findPath(table, target_id) {
   let path = [];
-  let prev = table[findIndexInTable(target_id, table)].previous;
+  let distances = [];
+  let prev = table[findIndexInTable(target_id, table)];
   // console.log(table);
   // return [];
   while (prev != null) {
-    path.push(prev);
-    prev = table[findIndexInTable(prev, table)].previous;
+    distances.push(prev.distance);
+    path.push(prev.id);
+    prev = table[findIndexInTable(prev.previous, table)];
   }
-  return path.reverse();
+  return [path.reverse(), distances];
 }
 
 export function Dijkstra(nodes, edges, start_id, end_id, onNext) {
+  const INF =
+    edges.reduce((carry, current) => {
+      return carry.label
+        ? parseInt(carry.label) + parseInt(current.label)
+        : carry + parseInt(current.label);
+    }) + 1;
+  console.log(INF);
   let visited = [];
   let unVisited = [...nodes];
   let table = nodes.map((node) => {
     return {
       id: node.id,
-      distance: node.id === start_id ? 0 : null,
+      distance: node.id === start_id ? INF : 0,
       previous: null,
     };
   });
+  console.log(table);
 
   let nextNode = findNextNode(table, unVisited);
   while (unVisited.length > 1) {
@@ -79,12 +83,12 @@ export function Dijkstra(nodes, edges, start_id, end_id, onNext) {
     connectNodes.forEach((node) => {
       const tableIndex = findIndexInTable(node.id, table);
       if (
-        table[tableIndex].distance == null ||
-        table[tableIndex].distance > nextNode.distance + node.distance
+        table[tableIndex].distance < Math.min(nextNode.distance, node.distance)
       ) {
-        table[tableIndex].distance = nextNode.distance + node.distance;
+        table[tableIndex].distance = Math.min(nextNode.distance, node.distance);
         table[tableIndex].previous = nextNode.id;
       }
+
       console.log(nextNode);
     });
     if (onNext) {
@@ -93,5 +97,9 @@ export function Dijkstra(nodes, edges, start_id, end_id, onNext) {
     nextNode = findNextNode(table, unVisited);
   }
   console.log(table);
-  return [...findPath(table, end_id), end_id];
+
+  const [path, distances] = findPath(table, end_id);
+  const maxCap = Math.min(...distances);
+
+  return [path, maxCap];
 }
