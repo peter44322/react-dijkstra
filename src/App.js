@@ -69,7 +69,7 @@ function App() {
               <Divider></Divider>
               <SolveControl
                 onSolve={(s, e) => {
-                  const [path, maxCap] = Dijkstra(
+                  const [path, cost] = Dijkstra(
                     ref.current.nodes.get(),
                     ref.current.edges.get(),
                     s,
@@ -77,7 +77,7 @@ function App() {
                   );
                   resetNetworkLayout(ref.current);
                   colorPath(path, ref.current, "#5ab55e");
-                  // alert("Max Capacity : " + maxCap);
+                  // alert("Cost : " + cost);
                 }}
               >
                 Dijkstra
