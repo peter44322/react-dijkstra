@@ -7,9 +7,10 @@ import DeleteControl from "./DeleteControl";
 import { Container, Grid, Divider, Segment } from "semantic-ui-react";
 import "./App.css";
 import Header from "./components/Header";
-import { MaxFlow } from "./util/maxFlow";
-import { Dijkstra } from "./util/Dijkstra";
-import { resetNetworkLayout, colorPath } from "./util/network";
+import { MaxFlow, intialStateMaxFlow, maxFlowStep } from "./util/maxFlow";
+import { Dijkstra, intialStateDijkstra, DijkstraStep } from "./util/Dijkstra";
+import { resetNetworkLayout, colorPath, addEdge } from "./util/network";
+import { sleep, findPathAndCost } from "./util/helpers";
 
 function App() {
   let graph = {
@@ -62,18 +63,7 @@ function App() {
               <Divider />
               <EdgeControl
                 onAdd={(edge) => {
-                  let old = null;
-                  ref.current.edges.forEach((ed) => {
-                    if (ed.from === edge.from && ed.to === edge.to) {
-                      old = ed;
-                    }
-                  });
-                  if (!old) {
-                    ref.current.edges.add(edge);
-                  } else {
-                    ref.current.edges.remove(old);
-                    ref.current.edges.add({ ...edge, color: "#7d5ab5" });
-                  }
+                  addEdge(edge, ref.current);
                 }}
               ></EdgeControl>
               <Divider></Divider>
@@ -86,11 +76,35 @@ function App() {
                     e
                   );
                   resetNetworkLayout(ref.current);
-                  colorPath(path, ref.current);
-                  alert("Max Capacity : " + maxCap);
+                  colorPath(path, ref.current, "#5ab55e");
+                  // alert("Max Capacity : " + maxCap);
                 }}
               >
                 Dijkstra
+              </SolveControl>
+              <SolveControl
+                onSolve={async (s, e) => {
+                  let state = intialStateDijkstra(
+                    ref.current.nodes.get(),
+                    ref.current.edges.get(),
+                    s
+                  );
+                  while (state.unVisited.length > 1) {
+                    state = DijkstraStep(state, ref.current.edges.get());
+                    resetNetworkLayout(ref.current);
+                    colorPath(
+                      state.visited.map((n) => n.id),
+                      ref.current,
+                      "red",
+                      false
+                    );
+                    await sleep(1000);
+                  }
+                  const [path] = findPathAndCost(state.table, e);
+                  colorPath(path, ref.current, "#5ab55e");
+                }}
+              >
+                Dijkstra Steps
               </SolveControl>
               <SolveControl
                 onSolve={(s, e) => {
@@ -101,11 +115,35 @@ function App() {
                     e
                   );
                   resetNetworkLayout(ref.current);
-                  colorPath(path, ref.current);
-                  alert("Max Capacity : " + maxCap);
+                  colorPath(path, ref.current, "#5ab55e");
+                  // alert("Max Capacity : " + maxCap);
                 }}
               >
                 MaxFlow
+              </SolveControl>
+              <SolveControl
+                onSolve={async (s, e) => {
+                  let state = intialStateMaxFlow(
+                    ref.current.nodes.get(),
+                    ref.current.edges.get(),
+                    s
+                  );
+                  while (state.unVisited.length > 1) {
+                    state = maxFlowStep(state, ref.current.edges.get());
+                    resetNetworkLayout(ref.current);
+                    colorPath(
+                      state.visited.map((n) => n.id),
+                      ref.current,
+                      "red",
+                      false
+                    );
+                    await sleep(1000);
+                  }
+                  const [path] = findPathAndCost(state.table, e);
+                  colorPath(path, ref.current, "#5ab55e");
+                }}
+              >
+                MaxFlow Steps
               </SolveControl>
             </Segment>
           </Grid.Column>

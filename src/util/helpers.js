@@ -78,3 +78,12 @@ export function generateINF(edges) {
     }) + 1
   );
 }
+export function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export function findPathAndCost(table, end_id) {
+  const [path, distances] = findPath(table, end_id);
+  const cost = distances.reduce((a, b) => a + b);
+  return [path, cost];
+}

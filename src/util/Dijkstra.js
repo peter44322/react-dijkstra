@@ -2,34 +2,41 @@
 import {
   findNextNodeForDijkstra,
   findIndexInTable,
-  findPath,
   getConnectedNodes,
   generateINF,
   intializeTableForDijkstra,
+  findPathAndCost,
 } from "./helpers";
-export function Dijkstra(nodes, edges, start_id, end_id) {
+
+export function intialStateDijkstra(nodes, edges, start_id) {
   const INF = generateINF(edges);
-  let visited = [];
-  let unVisited = [...nodes];
-  let table = intializeTableForDijkstra(nodes, start_id, INF);
+  return {
+    visited: [],
+    unVisited: [...nodes],
+    table: intializeTableForDijkstra(nodes, start_id, INF),
+  };
+}
+
+export function DijkstraStep(prevStep, edges) {
+  let { table, visited, unVisited } = prevStep;
 
   let nextNode = findNextNodeForDijkstra(table, unVisited);
-  while (unVisited.length > 1) {
-    visited.push(nextNode);
-    unVisited.splice(findIndexInTable(nextNode.id, unVisited), 1);
-    const connectNodes = getConnectedNodes(nextNode.id, edges);
-    connectNodes.forEach((node) => {
-      const tableIndex = findIndexInTable(node.id, table);
-      if (table[tableIndex].distance > nextNode.distance + node.distance) {
-        table[tableIndex].distance = nextNode.distance + node.distance;
-        table[tableIndex].previous = nextNode.id;
-      }
-    });
-    nextNode = findNextNodeForDijkstra(table, unVisited);
+  visited.push(nextNode);
+  unVisited.splice(findIndexInTable(nextNode.id, unVisited), 1);
+  const connectNodes = getConnectedNodes(nextNode.id, edges);
+  connectNodes.forEach((node) => {
+    const tableIndex = findIndexInTable(node.id, table);
+    if (table[tableIndex].distance > nextNode.distance + node.distance) {
+      table[tableIndex].distance = nextNode.distance + node.distance;
+      table[tableIndex].previous = nextNode.id;
+    }
+  });
+  return { table, visited, unVisited };
+}
+export function Dijkstra(nodes, edges, start_id, end_id) {
+  let state = intialStateDijkstra(nodes, edges, start_id);
+  while (state.unVisited.length > 1) {
+    state = DijkstraStep(state, edges);
   }
-
-  const [path, distances] = findPath(table, end_id);
-  const cost = distances.reduce((a, b) => a + b);
-
-  return [path, cost];
+  return findPathAndCost(state.table, end_id);
 }
