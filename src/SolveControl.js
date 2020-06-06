@@ -21,7 +21,7 @@ const SolveControl = (props) => {
         color="green"
         onClick={(e) => props.onSolve(start, end)}
       >
-        solve
+        {props.children}
       </Button>
     </Container>
   );

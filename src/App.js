@@ -9,6 +9,7 @@ import "./App.css";
 import Header from "./components/Header";
 import { MaxFlow } from "./util/maxFlow";
 import { Dijkstra } from "./util/Dijkstra";
+import { resetNetworkLayout, colorPath } from "./util/network";
 
 function App() {
   let graph = {
@@ -49,7 +50,7 @@ function App() {
         <Grid.Row columns={2}>
           <Grid.Column width={6}>
             <Segment>
-              <Header></Header>
+              <Header />
               <Divider />
               <NodeControl onAdd={(node) => ref.current.nodes.add(node)} />
               <Divider />
@@ -84,43 +85,28 @@ function App() {
                     s,
                     e
                   );
-                  const strPath = path.join(">");
-
-                  ref.current.nodes.forEach((node) => {
-                    ref.current.nodes.update({
-                      id: node.id,
-                      label: node.id,
-                      color: null,
-                    });
-                  });
-
-                  path.forEach((nodeId) => {
-                    ref.current.nodes.update({
-                      id: nodeId,
-                      label: nodeId,
-                      color: "#5ab55e",
-                    });
-                  });
-
-                  ref.current.edges.forEach((edge) => {
-                    ref.current.edges.update({
-                      ...edge,
-                      color: null,
-                      width: null,
-                    });
-                  });
-                  ref.current.edges.forEach((edge) => {
-                    if (strPath.includes(edge.from + ">" + edge.to))
-                      ref.current.edges.update({
-                        ...edge,
-                        color: "#5ab55e",
-                        width: 4,
-                        title: "sss",
-                      });
-                  });
+                  resetNetworkLayout(ref.current);
+                  colorPath(path, ref.current);
                   alert("Max Capacity : " + maxCap);
                 }}
-              ></SolveControl>
+              >
+                Dijkstra
+              </SolveControl>
+              <SolveControl
+                onSolve={(s, e) => {
+                  const [path, maxCap] = MaxFlow(
+                    ref.current.nodes.get(),
+                    ref.current.edges.get(),
+                    s,
+                    e
+                  );
+                  resetNetworkLayout(ref.current);
+                  colorPath(path, ref.current);
+                  alert("Max Capacity : " + maxCap);
+                }}
+              >
+                MaxFlow
+              </SolveControl>
             </Segment>
           </Grid.Column>
           <Grid.Column width={10}>
