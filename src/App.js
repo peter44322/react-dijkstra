@@ -1,6 +1,5 @@
 import React, { useRef, useState } from "react";
 import Graph from "react-graph-vis";
-import { Dijkstra } from "./Dijkstra";
 import NodeControl from "./NodeControl";
 import EdgeControl from "./EdgeControl";
 import SolveControl from "./SolveControl";
@@ -8,6 +7,8 @@ import DeleteControl from "./DeleteControl";
 import { Container, Grid, Divider, Segment } from "semantic-ui-react";
 import "./App.css";
 import Header from "./components/Header";
+import { MaxFlow } from "./util/maxFlow";
+import { Dijkstra } from "./util/Dijkstra";
 
 function App() {
   let graph = {
@@ -49,46 +50,28 @@ function App() {
           <Grid.Column width={6}>
             <Segment>
               <Header></Header>
-              <Divider></Divider>
-              <NodeControl
-                onAdd={(node) => {
-                  try {
-                    ref.current.nodes.add(node);
-                  } catch (e) {
-                    alert(e.message);
-                  }
-                }}
-              >
-                Add Node
-              </NodeControl>
-              <Divider></Divider>
+              <Divider />
+              <NodeControl onAdd={(node) => ref.current.nodes.add(node)} />
+              <Divider />
               <DeleteControl
                 onDelete={(id) => {
-                  try {
-                    ref.current.nodes.remove({ id: id });
-                    console.log(ref.current.edges.getDataSet());
-                  } catch (e) {
-                    alert(e.message);
-                  }
+                  ref.current.nodes.remove({ id: id });
                 }}
-              ></DeleteControl>
-              <Divider></Divider>
+              />
+              <Divider />
               <EdgeControl
                 onAdd={(edge) => {
                   let old = null;
-                  // ref.current.edges.foreach()
                   ref.current.edges.forEach((ed) => {
                     if (ed.from === edge.from && ed.to === edge.to) {
                       old = ed;
                     }
                   });
                   if (!old) {
-                    console.log(ref.current.edges.add(edge));
+                    ref.current.edges.add(edge);
                   } else {
                     ref.current.edges.remove(old);
-                    console.log(
-                      ref.current.edges.add({ ...edge, color: "#7d5ab5" })
-                    );
+                    ref.current.edges.add({ ...edge, color: "#7d5ab5" });
                   }
                 }}
               ></EdgeControl>
@@ -146,15 +129,7 @@ function App() {
                 style={{ height: "500px", width: "100%" }}
                 graph={graph}
                 options={options}
-                // events={events}
                 ref={ref}
-                getNetwork={(network) => {
-                  // network.nodes.add({ id: "dddddddddd", label: "sssssssss" });
-                  // network.addNodeMode();
-                  // console.log(network.nodes);
-                  // network.addEdgeMode();
-                  //  if you want access to vis.js network api you can set the state in a parent component using this property
-                }}
               />
             </Segment>
           </Grid.Column>

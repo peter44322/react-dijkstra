@@ -17,8 +17,11 @@ const NodeControl = (props) => {
             id: label,
             label: label,
           };
-
-          props.onAdd(node);
+          try {
+            props.onAdd(node);
+          } catch (e) {
+            alert(e.message);
+          }
         }}
       >
         Add Node
