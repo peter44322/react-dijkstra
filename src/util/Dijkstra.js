@@ -8,6 +8,11 @@ import {
   findPathAndCost,
 } from "./helpers";
 
+/* intilize the first state to have an 
+  empty visited array
+  unVisited array with all the nodes
+  intial table
+*/
 export function intialStateDijkstra(nodes, edges, start_id) {
   const INF = generateINF(edges);
   return {
@@ -16,7 +21,10 @@ export function intialStateDijkstra(nodes, edges, start_id) {
     table: intializeTableForDijkstra(nodes, start_id, INF),
   };
 }
-
+/*
+  this function takes a step with table,visited and unvisited 
+  and return the next step after preforming on iteration from the algorithm
+*/
 export function DijkstraStep(prevStep, edges) {
   let { table, visited, unVisited } = prevStep;
 
@@ -33,7 +41,12 @@ export function DijkstraStep(prevStep, edges) {
   });
   return { table, visited, unVisited };
 }
+/*
+function to solve the graph by iteration throw the 
+algorthim step
+*/
 export function Dijkstra(nodes, edges, start_id, end_id) {
+  //initialize the first state
   let state = intialStateDijkstra(nodes, edges, start_id);
   while (state.unVisited.length > 1) {
     state = DijkstraStep(state, edges);
