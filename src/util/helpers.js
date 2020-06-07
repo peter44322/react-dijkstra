@@ -36,12 +36,10 @@ export function findIndexInTable(id, table) {
 
 export function findPath(table, target_id) {
   let path = [];
-  let distances = [];
   let prev = table[findIndexInTable(target_id, table)];
-  // console.log(table);
+  let distances = prev.distance;
   // return [];
   while (prev != null) {
-    distances.push(prev.distance);
     path.push(prev.id);
     prev = table[findIndexInTable(prev.previous, table)];
   }
@@ -83,7 +81,6 @@ export function sleep(ms) {
 }
 
 export function findPathAndCost(table, end_id) {
-  const [path, distances] = findPath(table, end_id);
-  const cost = distances.reduce((a, b) => a + b);
+  const [path, cost] = findPath(table, end_id);
   return [path, cost];
 }
