@@ -51,6 +51,14 @@ function App() {
         <Grid.Row columns={2}>
           <Grid.Column width={6}>
             <Segment>
+              This is An Implementation For the final Algorithms project
+              2019/2020
+              <br />
+              under the supervision of
+              <br />
+              Dr.Moustafa reda Eltantawi
+            </Segment>
+            <Segment>
               <Header />
               <Divider />
               <NodeControl onAdd={(node) => ref.current.nodes.add(node)} />
@@ -77,7 +85,7 @@ function App() {
                   );
                   resetNetworkLayout(ref.current);
                   colorPath(path, ref.current, "#5ab55e");
-                  // alert("Cost : " + cost);
+                  alert("Cost : " + cost);
                 }}
               >
                 Dijkstra
@@ -116,7 +124,7 @@ function App() {
                   );
                   resetNetworkLayout(ref.current);
                   colorPath(path, ref.current, "#5ab55e");
-                  // alert("Max Capacity : " + maxCap);
+                  alert("Max Capacity : " + maxCap);
                 }}
               >
                 MaxFlow
