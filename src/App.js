@@ -11,6 +11,7 @@ import { MaxFlow, intialStateMaxFlow, maxFlowStep } from "./util/maxFlow";
 import { Dijkstra, intialStateDijkstra, DijkstraStep } from "./util/Dijkstra";
 import { resetNetworkLayout, colorPath, addEdge } from "./util/network";
 import { sleep, findPathAndCost } from "./util/helpers";
+import Steps from "./components/Steps";
 
 function App() {
   let graph = {
@@ -57,6 +58,7 @@ function App() {
               under the supervision of
               <br />
               Dr.Moustafa reda Eltantawi
+              <Steps></Steps>
             </Segment>
             <Segment>
               <Header />
