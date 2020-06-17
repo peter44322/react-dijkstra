@@ -13,12 +13,17 @@ export function findNextNodeForMaxFlow(table, unVisited) {
   });
 }
 
-export function getConnectedNodes(node_id, edges) {
+export function getConnectedNodes(node_id, edges, bi) {
   let connected = [];
   edges.forEach((edge) => {
     if (edge.from === node_id) {
       connected.push({
         id: edge.to,
+        distance: parseInt(edge.label),
+      });
+    } else if (bi && edge.to === node_id) {
+      connected.push({
+        id: edge.from,
         distance: parseInt(edge.label),
       });
     }
@@ -83,4 +88,26 @@ export function sleep(ms) {
 export function findPathAndCost(table, end_id) {
   const [path, cost] = findPath(table, end_id);
   return [path, cost];
+}
+
+export function cleanDuplicatedEdges(network) {
+  let edges = network.edges.get();
+  let removed = [];
+  console.log(network, edges);
+  edges.forEach((edge) => {
+    const duplicates = edges.filter((o) => {
+      return (
+        edge.from == o.to &&
+        edge.to == o.from &&
+        edge.id != o.id &&
+        !removed.includes(edge.id)
+      );
+    });
+    if (duplicates.length > 0) {
+      duplicates.forEach((dup) => {
+        network.edges.remove(dup.id);
+        removed.push(dup.id);
+      });
+    }
+  });
 }

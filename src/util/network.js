@@ -15,7 +15,7 @@ export function resetNetworkLayout(network) {
   });
 }
 
-export function colorPath(path, network, color, edges = true) {
+export function colorPath(path, network, color, edges = true, bi) {
   const strPath = path.join(">");
   path.forEach((nodeId) => {
     network.nodes.update({
@@ -36,7 +36,10 @@ export function colorPath(path, network, color, edges = true) {
   //   });
   if (edges)
     network.edges.forEach((edge) => {
-      if (strPath.includes(edge.from + ">" + edge.to))
+      if (
+        strPath.includes(edge.from + ">" + edge.to) ||
+        (bi && strPath.includes(edge.to + ">" + edge.from))
+      )
         network.edges.update({
           ...edge,
           color,
@@ -46,11 +49,20 @@ export function colorPath(path, network, color, edges = true) {
     });
 }
 
-export function addEdge(edge, network) {
+export function addEdge(edge, network, bi) {
   let old = null;
   network.edges.forEach((ed) => {
-    if (ed.from === edge.from && ed.to === edge.to) {
-      old = ed;
+    if (bi) {
+      if (
+        (ed.from === edge.from && ed.to === edge.to) ||
+        (ed.to === edge.from && ed.from === edge.to)
+      ) {
+        old = ed;
+      }
+    } else {
+      if (ed.from === edge.from && ed.to === edge.to) {
+        old = ed;
+      }
     }
   });
   if (!old) {

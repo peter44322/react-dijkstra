@@ -10,7 +10,7 @@ import Header from "./components/Header";
 import { MaxFlow, intialStateMaxFlow, maxFlowStep } from "./util/maxFlow";
 import { Dijkstra, intialStateDijkstra, DijkstraStep } from "./util/Dijkstra";
 import { resetNetworkLayout, colorPath, addEdge } from "./util/network";
-import { sleep, findPathAndCost } from "./util/helpers";
+import { sleep, findPathAndCost, cleanDuplicatedEdges } from "./util/helpers";
 import Steps from "./components/Steps";
 
 const graph = {
@@ -35,6 +35,7 @@ const graph = {
 function App() {
   const ref = useRef();
   const [solution, setSolution] = useState("");
+  const [bi, setBi] = useState(false);
   const options = {
     layout: {
       hierarchical: false,
@@ -61,7 +62,27 @@ function App() {
               <Steps></Steps>
             </Segment>
             <Segment>
-              <Header />
+              <Header
+                onChange={(val) => {
+                  setBi(val);
+                  if (val) {
+                    cleanDuplicatedEdges(ref.current);
+                    ref.current.Network.setOptions({
+                      edges: {
+                        smooth: false,
+                        arrows: { to: { enabled: false } },
+                      },
+                    });
+                  } else {
+                    ref.current.Network.setOptions({
+                      edges: {
+                        smooth: true,
+                        arrows: { to: { enabled: true } },
+                      },
+                    });
+                  }
+                }}
+              />
               <Divider />
               <NodeControl onAdd={(node) => ref.current.nodes.add(node)} />
               <Divider />
@@ -73,7 +94,7 @@ function App() {
               <Divider />
               <EdgeControl
                 onAdd={(edge) => {
-                  addEdge(edge, ref.current);
+                  addEdge(edge, ref.current, bi);
                 }}
               ></EdgeControl>
               <Divider></Divider>
@@ -83,10 +104,11 @@ function App() {
                     ref.current.nodes.get(),
                     ref.current.edges.get(),
                     s,
-                    e
+                    e,
+                    bi
                   );
                   resetNetworkLayout(ref.current);
-                  colorPath(path, ref.current, "#5ab55e");
+                  colorPath(path, ref.current, "#5ab55e", true, bi);
                   setSolution("cost: " + cost + ", " + path.join(">"));
                 }}
               >
@@ -98,10 +120,11 @@ function App() {
                     ref.current.nodes.get(),
                     ref.current.edges.get(),
                     s,
-                    e
+                    e,
+                    bi
                   );
                   resetNetworkLayout(ref.current);
-                  colorPath(path, ref.current, "#5ab55e");
+                  colorPath(path, ref.current, "#5ab55e", true, bi);
                   setSolution("max flow: " + maxCap + ", " + path.join(">"));
                 }}
               >
@@ -117,7 +140,7 @@ function App() {
                     s
                   );
                   while (state.unVisited.length > 1) {
-                    state = DijkstraStep(state, ref.current.edges.get());
+                    state = DijkstraStep(state, ref.current.edges.get(), bi);
                     resetNetworkLayout(ref.current);
                     setSolution(
                       "Visited: " +
@@ -130,12 +153,13 @@ function App() {
                       state.visited.map((n) => n.id),
                       ref.current,
                       "red",
-                      false
+                      false,
+                      bi
                     );
                     await sleep(t * 1000);
                   }
                   const [path, cost] = findPathAndCost(state.table, e);
-                  colorPath(path, ref.current, "#5ab55e");
+                  colorPath(path, ref.current, "#5ab55e", true, bi);
                   setSolution("cost: " + cost + ", " + path.join(">"));
                 }}
               >
@@ -156,7 +180,8 @@ function App() {
                       state.visited.map((n) => n.id),
                       ref.current,
                       "red",
-                      false
+                      false,
+                      bi
                     );
                     setSolution(
                       "Visited: " +
@@ -168,7 +193,7 @@ function App() {
                     await sleep(t * 1000);
                   }
                   const [path, cost] = findPathAndCost(state.table, e);
-                  colorPath(path, ref.current, "#5ab55e");
+                  colorPath(path, ref.current, "#5ab55e", true, bi);
                   setSolution("Max Flow: " + cost + ", " + path.join(">"));
                 }}
               >

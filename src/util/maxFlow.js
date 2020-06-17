@@ -24,12 +24,12 @@ export function intialStateMaxFlow(nodes, edges, start_id) {
   this function takes a step with table,visited and unvisited 
   and return the next step after preforming on iteration from the algorithm
 */
-export function maxFlowStep(prevStep, edges) {
+export function maxFlowStep(prevStep, edges, bi) {
   let { table, visited, unVisited } = prevStep;
   let nextNode = findNextNodeForMaxFlow(table, unVisited);
   visited.push(nextNode);
   unVisited.splice(findIndexInTable(nextNode.id, unVisited), 1);
-  const connectNodes = getConnectedNodes(nextNode.id, edges);
+  const connectNodes = getConnectedNodes(nextNode.id, edges, bi);
   connectNodes.forEach((node) => {
     const tableIndex = findIndexInTable(node.id, table);
     if (
@@ -45,10 +45,10 @@ export function maxFlowStep(prevStep, edges) {
 function to solve the graph by iteration throw the 
 algorthim step
 */
-export function MaxFlow(nodes, edges, start_id, end_id) {
+export function MaxFlow(nodes, edges, start_id, end_id, bi) {
   let state = intialStateMaxFlow(nodes, edges, start_id);
   while (state.unVisited.length > 1) {
-    state = maxFlowStep(state, edges);
+    state = maxFlowStep(state, edges, bi);
   }
   return findPathAndCost(state.table, end_id);
 }
