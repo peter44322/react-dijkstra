@@ -13,28 +13,28 @@ import { resetNetworkLayout, colorPath, addEdge } from "./util/network";
 import { sleep, findPathAndCost } from "./util/helpers";
 import Steps from "./components/Steps";
 
+const graph = {
+  nodes: [
+    { id: "A", label: "A" },
+    { id: "B", label: "B" },
+    { id: "C", label: "C" },
+    { id: "D", label: "D" },
+    { id: "E", label: "E" },
+  ],
+  edges: [
+    { from: "A", to: "B", label: "6" },
+    { from: "A", to: "D", label: "1" },
+    { from: "B", to: "D", label: "2" },
+    { from: "B", to: "E", label: "1" },
+    { from: "D", to: "E", label: "1" },
+    { from: "E", to: "B", label: "2" },
+    { from: "C", to: "B", label: "5" },
+    { from: "E", to: "C", label: "5" },
+  ],
+};
 function App() {
-  let graph = {
-    nodes: [
-      { id: "A", label: "A" },
-      { id: "B", label: "B" },
-      { id: "C", label: "C" },
-      { id: "D", label: "D" },
-      { id: "E", label: "E" },
-    ],
-    edges: [
-      { from: "A", to: "B", label: "6" },
-      { from: "A", to: "D", label: "1" },
-      { from: "B", to: "D", label: "2" },
-      { from: "B", to: "E", label: "1" },
-      { from: "D", to: "E", label: "1" },
-      { from: "E", to: "B", label: "2" },
-      { from: "C", to: "B", label: "5" },
-      { from: "E", to: "C", label: "5" },
-    ],
-  };
   const ref = useRef();
-
+  const [solution, setSolution] = useState("");
   const options = {
     layout: {
       hierarchical: false,
@@ -87,34 +87,10 @@ function App() {
                   );
                   resetNetworkLayout(ref.current);
                   colorPath(path, ref.current, "#5ab55e");
-                  alert("Cost : " + cost);
+                  setSolution("cost: " + cost + ", " + path.join(">"));
                 }}
               >
                 Dijkstra
-              </SolveControl>
-              <SolveControl
-                onSolve={async (s, e) => {
-                  let state = intialStateDijkstra(
-                    ref.current.nodes.get(),
-                    ref.current.edges.get(),
-                    s
-                  );
-                  while (state.unVisited.length > 1) {
-                    state = DijkstraStep(state, ref.current.edges.get());
-                    resetNetworkLayout(ref.current);
-                    colorPath(
-                      state.visited.map((n) => n.id),
-                      ref.current,
-                      "red",
-                      false
-                    );
-                    await sleep(1000);
-                  }
-                  const [path] = findPathAndCost(state.table, e);
-                  colorPath(path, ref.current, "#5ab55e");
-                }}
-              >
-                Dijkstra Steps
               </SolveControl>
               <SolveControl
                 onSolve={(s, e) => {
@@ -126,13 +102,48 @@ function App() {
                   );
                   resetNetworkLayout(ref.current);
                   colorPath(path, ref.current, "#5ab55e");
-                  alert("Max Capacity : " + maxCap);
+                  setSolution("max flow: " + maxCap + ", " + path.join(">"));
                 }}
               >
                 MaxFlow
               </SolveControl>
+              <Divider />
               <SolveControl
-                onSolve={async (s, e) => {
+                time={true}
+                onSolve={async (s, e, t) => {
+                  let state = intialStateDijkstra(
+                    ref.current.nodes.get(),
+                    ref.current.edges.get(),
+                    s
+                  );
+                  while (state.unVisited.length > 1) {
+                    state = DijkstraStep(state, ref.current.edges.get());
+                    resetNetworkLayout(ref.current);
+                    setSolution(
+                      "Visited: " +
+                        state.visited.map((n) => n.id).join(" ") +
+                        " , " +
+                        "Unvisited: " +
+                        state.unVisited.map((n) => n.id).join(" ")
+                    );
+                    colorPath(
+                      state.visited.map((n) => n.id),
+                      ref.current,
+                      "red",
+                      false
+                    );
+                    await sleep(t * 1000);
+                  }
+                  const [path, cost] = findPathAndCost(state.table, e);
+                  colorPath(path, ref.current, "#5ab55e");
+                  setSolution("cost: " + cost + ", " + path.join(">"));
+                }}
+              >
+                Dijkstra Steps
+              </SolveControl>
+              <SolveControl
+                time={true}
+                onSolve={async (s, e, t) => {
                   let state = intialStateMaxFlow(
                     ref.current.nodes.get(),
                     ref.current.edges.get(),
@@ -147,10 +158,18 @@ function App() {
                       "red",
                       false
                     );
-                    await sleep(1000);
+                    setSolution(
+                      "Visited: " +
+                        state.visited.map((n) => n.id).join(" ") +
+                        " , " +
+                        "Unvisited: " +
+                        state.unVisited.map((n) => n.id).join(" ")
+                    );
+                    await sleep(t * 1000);
                   }
-                  const [path] = findPathAndCost(state.table, e);
+                  const [path, cost] = findPathAndCost(state.table, e);
                   colorPath(path, ref.current, "#5ab55e");
+                  setSolution("Max Flow: " + cost + ", " + path.join(">"));
                 }}
               >
                 MaxFlow Steps
@@ -166,6 +185,7 @@ function App() {
                 ref={ref}
               />
             </Segment>
+            {solution && <Segment>{solution}</Segment>}
           </Grid.Column>
         </Grid.Row>
       </Grid>

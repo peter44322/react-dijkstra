@@ -4,8 +4,23 @@ import { Container, Input, Button } from "semantic-ui-react";
 const SolveControl = (props) => {
   const [start, setStart] = useState("A");
   const [end, setEnd] = useState("C");
+  const [time, setTime] = useState(1);
   return (
     <Container>
+      {props.time && (
+        <>
+          <input
+            value={time}
+            min={1}
+            max={10}
+            step={1}
+            placeholder="s"
+            type="range"
+            onChange={(e) => setTime(e.target.value)}
+          ></input>
+          <span className="mr-3">{time} s</span>
+        </>
+      )}
       <Input
         value={start}
         placeholder="Start"
@@ -17,9 +32,9 @@ const SolveControl = (props) => {
         onChange={(e) => setEnd(e.target.value)}
       ></Input>
       <Button
-        disabled={!start || !end}
+        disabled={!start || !end || !time}
         color="green"
-        onClick={(e) => props.onSolve(start, end)}
+        onClick={(e) => props.onSolve(start, end, time)}
       >
         {props.children}
       </Button>
