@@ -4,7 +4,17 @@ import NodeControl from "./NodeControl";
 import EdgeControl from "./EdgeControl";
 import SolveControl from "./SolveControl";
 import DeleteControl from "./DeleteControl";
-import { Container, Grid, Divider, Segment } from "semantic-ui-react";
+import {
+  Container,
+  Grid,
+  Divider,
+  Segment,
+  Dimmer,
+  Header as SHeader,
+  Table,
+  Button,
+  Label,
+} from "semantic-ui-react";
 import "./App.css";
 import Header from "./components/Header";
 import { MaxFlow, intialStateMaxFlow, maxFlowStep } from "./util/maxFlow";
@@ -36,6 +46,8 @@ function App() {
   const ref = useRef();
   const [solution, setSolution] = useState("");
   const [bi, setBi] = useState(false);
+  const [dimmed, setDimmed] = useState(true);
+  const [solving, setSolving] = useState(false);
   const options = {
     layout: {
       hierarchical: false,
@@ -99,7 +111,9 @@ function App() {
               ></EdgeControl>
               <Divider></Divider>
               <SolveControl
+                solving={solving}
                 onSolve={(s, e) => {
+                  setSolving(true);
                   const [path, cost] = Dijkstra(
                     ref.current.nodes.get(),
                     ref.current.edges.get(),
@@ -110,12 +124,15 @@ function App() {
                   resetNetworkLayout(ref.current);
                   colorPath(path, ref.current, "#5ab55e", true, bi);
                   setSolution("cost: " + cost + ", " + path.join(">"));
+                  setSolving(false);
                 }}
               >
                 Dijkstra
               </SolveControl>
               <SolveControl
+                solving={solving}
                 onSolve={(s, e) => {
+                  setSolving(true);
                   const [path, maxCap] = MaxFlow(
                     ref.current.nodes.get(),
                     ref.current.edges.get(),
@@ -126,14 +143,17 @@ function App() {
                   resetNetworkLayout(ref.current);
                   colorPath(path, ref.current, "#5ab55e", true, bi);
                   setSolution("max flow: " + maxCap + ", " + path.join(">"));
+                  setSolving(false);
                 }}
               >
                 MaxFlow
               </SolveControl>
               <Divider />
               <SolveControl
+                solving={solving}
                 time={true}
                 onSolve={async (s, e, t) => {
+                  setSolving(true);
                   let state = intialStateDijkstra(
                     ref.current.nodes.get(),
                     ref.current.edges.get(),
@@ -161,13 +181,16 @@ function App() {
                   const [path, cost] = findPathAndCost(state.table, e);
                   colorPath(path, ref.current, "#5ab55e", true, bi);
                   setSolution("cost: " + cost + ", " + path.join(">"));
+                  setSolving(false);
                 }}
               >
                 Dijkstra Steps
               </SolveControl>
               <SolveControl
+                solving={solving}
                 time={true}
                 onSolve={async (s, e, t) => {
+                  setSolving(true);
                   let state = intialStateMaxFlow(
                     ref.current.nodes.get(),
                     ref.current.edges.get(),
@@ -195,6 +218,7 @@ function App() {
                   const [path, cost] = findPathAndCost(state.table, e);
                   colorPath(path, ref.current, "#5ab55e", true, bi);
                   setSolution("Max Flow: " + cost + ", " + path.join(">"));
+                  setSolving(false);
                 }}
               >
                 MaxFlow Steps
@@ -214,6 +238,58 @@ function App() {
           </Grid.Column>
         </Grid.Row>
       </Grid>
+      <Dimmer page={true} active={dimmed}>
+        <SHeader inverted icon>
+          Welcome To Maximum Flow and Dijkstra Algorithms
+          <SHeader.Subheader>
+            This is An Implementation For the final Algorithms project 2019/2020
+            <br />
+            under the supervision of
+            <br />
+            <strong>Dr.Moustafa reda Eltantawi</strong>
+            <p>
+              faculty of computer and artificial intelligence - cairo university
+            </p>
+          </SHeader.Subheader>
+        </SHeader>
+        <Table celled inverted>
+          <Table.Header>
+            <Table.Row>
+              <Table.HeaderCell colSpan={2}>
+                <Label ribbon>Implemented By</Label>
+              </Table.HeaderCell>
+            </Table.Row>
+            <Table.Row>
+              <Table.HeaderCell>Name</Table.HeaderCell>
+              <Table.HeaderCell>ID</Table.HeaderCell>
+            </Table.Row>
+          </Table.Header>
+          <Table.Body>
+            <Table.Row>
+              <Table.Cell>Bavly Adel</Table.Cell>
+              <Table.Cell>20160082</Table.Cell>
+            </Table.Row>
+            <Table.Row>
+              <Table.Cell>Engy Hishmat</Table.Cell>
+              <Table.Cell>20160069</Table.Cell>
+            </Table.Row>
+            <Table.Row>
+              <Table.Cell>Joseph Medhat</Table.Cell>
+              <Table.Cell>20160088</Table.Cell>
+            </Table.Row>
+            <Table.Row>
+              <Table.Cell>Peter Safwat</Table.Cell>
+              <Table.Cell>20160083</Table.Cell>
+            </Table.Row>
+          </Table.Body>
+        </Table>
+        <Button
+          onClick={(e) => setDimmed(false)}
+          content="Proceed"
+          icon="right arrow"
+          labelPosition="right"
+        />
+      </Dimmer>
     </Container>
   );
 }

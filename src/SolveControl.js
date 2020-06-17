@@ -32,9 +32,10 @@ const SolveControl = (props) => {
         onChange={(e) => setEnd(e.target.value)}
       ></Input>
       <Button
-        disabled={!start || !end || !time}
+        disabled={!start || !end || !time || props.solving}
         color="green"
-        onClick={(e) => props.onSolve(start, end, time)}
+        loading={props.solving}
+        onClick={(e) => !props.solving && props.onSolve(start, end, time)}
       >
         {props.children}
       </Button>
