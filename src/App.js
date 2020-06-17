@@ -174,7 +174,7 @@ function App() {
                     s
                   );
                   while (state.unVisited.length > 1) {
-                    state = maxFlowStep(state, ref.current.edges.get());
+                    state = maxFlowStep(state, ref.current.edges.get(), bi);
                     resetNetworkLayout(ref.current);
                     colorPath(
                       state.visited.map((n) => n.id),
